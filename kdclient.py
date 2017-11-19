@@ -1,5 +1,5 @@
 import tkinter as tk
-import twisted
+#import twisted
 import random
 from functools import partial #for a hack in buttons because late binding REEEE
 
