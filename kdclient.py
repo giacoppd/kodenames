@@ -24,7 +24,7 @@ def fool():
 
 def drawtable(table, spy, seed):
     root = tk.Tk()
-    root.geometry("800x600") #maybe change later, but window size
+    root.geometry("800x560") #maybe change later, but window size
     root.title("Kodenames")
     tk.Label(text="Kodenames! Seed = " + str(seed)).grid(row=0, column=2)
     tk.Label(text="hi", width=20).grid(row=1,column=0)
@@ -45,7 +45,7 @@ def drawtable(table, spy, seed):
             if(table[x][y][1] == 3):
                 bgc = "black"
             b = tk.Button(root, text=table[x][y][0], bg=bgc, width=15,
-                    height=10,command=cmd) #so long I split the line
+                    height=6,command=cmd) #so long I split the line
             b.grid(row=x+2,column=y)
             
     root.mainloop()
