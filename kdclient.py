@@ -2,6 +2,7 @@ import tkinter as tk
 import twisted
 import random
 from functools import partial #for a hack in buttons because late binding REEEE
+
 def testgen():
     table = []
     temp = -1
@@ -16,21 +17,25 @@ def testgen():
                     counts[temp] -= 1 #get rid of 1 from the count 
                     ele[1] = temp #and assign it to the space
     return table
-def updateServer(cords):
-    print(cords[0],cords[1]) #TODO make this do network shit
+def updateServer(x, y, frame):
+    print(x,y) #TODO make this do network shit
+def fool():
+    print("baka") #TODO make the button disable itself when pressed once instead of just this
 
-def drawtable(table, spy):
+def drawtable(table, spy, seed):
     root = tk.Tk()
     root.geometry("800x600") #maybe change later, but window size
     root.title("Kodenames")
-    tk.Label(text="hi", width=30).grid(row=0,column=0)
-    tk.Label(text="turn", width=30).grid(row=0,column=2)
-    tk.Label(text="bye", width=30).grid(row=0,column=4)
+    tk.Label(text="Kodenames! Seed = " + str(seed)).grid(row=0, column=2)
+    tk.Label(text="hi", width=20).grid(row=1,column=0)
+    tk.Label(text="turn", width=20).grid(row=1,column=2)
+    tk.Label(text="bye", width=20).grid(row=1,column=4)
     for x in range(0,5):
         for y in range(0,5):
-            v = tk.IntVar()
+            cmd=partial(updateServer, x, y, root)
             if(table[x][y][1] == -1):
                 bgc = "green"
+                cmd=fool
             if(table[x][y][1] == 0):
                 bgc = "red"
             if(table[x][y][1] == 1):
@@ -39,11 +44,12 @@ def drawtable(table, spy):
                 bgc = "yellow"
             if(table[x][y][1] == 3):
                 bgc = "black"
-            b = tk.Checkbutton(root, text=table[x][y][0], bg=bgc, variable=v, command=partial(updateServer,[x,y]))
-            b.grid(row=x+1,column=y)
+            b = tk.Button(root, text=table[x][y][0], bg=bgc, width=15,
+                    command=cmd) #so long I split the line
+            b.grid(row=x+2,column=y)
             
     root.mainloop()
 
 
 table = testgen()
-drawtable(table, 1)
+drawtable(table, 1, 10)
