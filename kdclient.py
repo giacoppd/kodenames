@@ -45,7 +45,7 @@ def drawtable(table, spy, seed):
             if(table[x][y][1] == 3):
                 bgc = "black"
             b = tk.Button(root, text=table[x][y][0], bg=bgc, width=15,
-                    command=cmd) #so long I split the line
+                    height=10,command=cmd) #so long I split the line
             b.grid(row=x+2,column=y)
             
     root.mainloop()
