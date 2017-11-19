@@ -3,6 +3,9 @@ import tkinter as tk
 import random
 from functools import partial #for a hack in buttons because late binding REEEE
 
+def gettable():
+
+
 def testgen():
     table = []
     temp = -1
@@ -27,8 +30,8 @@ def drawtable(table, spy, seed):
     root.geometry("800x560") #maybe change later, but window size
     root.title("Kodenames")
     tk.Label(text="Kodenames! Seed = " + str(seed)).grid(row=0, column=2)
-    tk.Label(text="hi", width=20).grid(row=1,column=0)
-    tk.Label(text="turn", width=20).grid(row=1,column=2)
+    tk.Label(text="hi", width=20).grid(row=1,column=0) #TODO replace these labels with ones for score and the 
+    tk.Label(text="turn", width=20).grid(row=1,column=2) #player's turn when the time comes for networking
     tk.Label(text="bye", width=20).grid(row=1,column=4)
     for x in range(0,5):
         for y in range(0,5):
@@ -50,6 +53,10 @@ def drawtable(table, spy, seed):
             
     root.mainloop()
 
+def main():
+    print("What's your name?")
+    name = input()
+    table = testgen()
+    drawtable(table, 1, 10)
 
-table = testgen()
-drawtable(table, 1, 10)
+main()
