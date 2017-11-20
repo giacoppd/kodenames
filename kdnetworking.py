@@ -7,15 +7,17 @@ from random import randint
 class handler(LineReceiver):
 users
 table
+gamestate
 
     @classmethod
-    def setusers(_users, _table):
+    def setusers(_users, _table, _gamestate):
         handler.users = _users
         handler.table = _table
+        handler.gamestate = _gamestate
 
     def __init__(self, _number, _role):
         self.name = None
-        self.state = "NAME"
+        self.state = "INIT"
         self.number = _number #user number, AKA which list element they are
         self.role = _role #role token
 
@@ -43,11 +45,11 @@ table
         elif(self.state == "WAIT"):
             continue
         elif(self.state == "TURN"):
+            handler.gamestate[handler.table[data[0]][data[2]][1]] -= 1 #updates the game state. Its awful.
             for x in handler.users:
                 x.sendLine(handler.table[data[0]][data[2]][1]) #send all players the update
+            self.state == "OVER"
 
-    #this will only ever be when I get coords from a player or their name
-        
     def connectionMade(self):
         self.sendLine("Connection Made! Enter your name")
         self.state = "NAME"         
@@ -106,9 +108,13 @@ class bighandler(Factory):
             for(x in range(0,n)):
                 self.order.append(border[x])
                 self.order.append(rorder[x])
-    
+        if(heavy == 0):
+            self.gamestate = [9,8,1,7]
+        else:
+            self.gamestate = [8.9.1,7]
+
     def buildProtocol(self, addr):
-        p = handler(self.count, self.roles[self.count])
+        p = handler(self.count, self.roles[self.count], self.gamestate)
         self.count += 1
         self.users.append(p)
         return p

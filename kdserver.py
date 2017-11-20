@@ -16,9 +16,9 @@ def arraygen():
 
 def arraycolors(table, heavy):
     if(heavy == 0):
-        counts = [9, 8, 7, 1] #red is 0, blue is 1, 2 is neuts, 3 is dead
+        counts = [9, 8, 1, 7] #red is 0, blue is 1, 2 is neuts, 3 is dead
     else:
-        counts = [8, 9, 7, 1] #Flop so teams go in different order
+        counts = [8, 9, 1, 7] #Flop so teams go in different order
     for x in table:
         for ele in x:
             while(ele[1] == -1):
@@ -39,6 +39,8 @@ def main():
     print("How many players?")
     playerc = int(input())
     heavy = random.randint(0,1) #which side goes first, 0 for red, 1 for blue
+    alivegame = True
+    winner
     plain_table = arraygen()
     secret_table = arraycolors(plain_table)
     factory = bighandler(secret_table)
@@ -50,7 +52,16 @@ def main():
     factory.sendroles()
     factory.sendtables()
     sleep(5) #make sure everyone gets it, the easy way
-    for x in range (0, len(factor.order)): #start taking turns here
+    while(alivegame): 
+        for x in range (0, len(factory.order)): #start taking turns here
+            factory.users[factor.order[x]].state = "TURN"
+            while(factory.users[factor.order[x]].state != "OVER"):
+                sleep(2)
+            for y in range (0,2):
+                if(handler.gamestate[y] == 0):
+                    alivegame = false 
+    #game is over at end of loop
+    reactor.stop()
+     
             
-
 main()
