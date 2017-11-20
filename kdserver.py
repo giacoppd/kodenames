@@ -2,7 +2,7 @@ import random
 import sys
 import getopt
 import random
-import kdnetworking.py
+from kdnetworking import *
 from time import sleep
 def getword():#TODO make this pull randomish words.
     return "owo"
@@ -31,19 +31,20 @@ def arraycolors(table, heavy):
 
 def main():
     print("What seed?")
-    random.seed(input())
+    random.seed(888)#input())
     print("Port #, or just enter for the default of 9876")
-    port = int(input())
-    if(port == ""):
-        port = 9876
+    #handle = input()
+    #if(handle == ""):
+    port = 9876
+    #else:
+    #    port = int(handle)
     print("How many players?")
-    playerc = int(input())
+    playerc = 4
+    #playerc = int(input())
     heavy = random.randint(0,1) #which side goes first, 0 for red, 1 for blue
     alivegame = True
-    winner
-    plain_table = arraygen()
-    secret_table = arraycolors(plain_table)
-    factory = bighandler(secret_table)
+    secret_table = arraycolors(arraygen(), heavy)
+    factory = bighandler(secret_table, playerc, heavy)
     reactor.listenTCP(port, factory)
     reactor.run()
     while(len(factory.users) != playerc):
@@ -57,6 +58,7 @@ def main():
             factory.users[factor.order[x]].state = "TURN"
             while(factory.users[factor.order[x]].state != "OVER"):
                 sleep(2)
+            factory.users[factor.order[x]].state = "WAIT"
             for y in range (0,2):
                 if(handler.gamestate[y] == 0):
                     alivegame = false 
