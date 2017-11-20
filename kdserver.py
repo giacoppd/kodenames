@@ -1,9 +1,9 @@
 import random
 import sys
 import getopt
-from twisted.protocols import basic
 import random
-
+import kdnetworking.py
+from time import sleep
 def getword():#TODO make this pull randomish words.
     return "owo"
 
@@ -14,8 +14,8 @@ def arraygen():
         table.append([[getword(),-1, 0] for y in range(0,5)]) #the word, the color int, and the pressed bool/int
     return table
 
-def arraycolors(table):
-    if(random.randint(0,1) == 0):
+def arraycolors(table, heavy):
+    if(heavy == 0):
         counts = [9, 8, 7, 1] #red is 0, blue is 1, 2 is neuts, 3 is dead
     else:
         counts = [8, 9, 7, 1] #Flop so teams go in different order
@@ -33,11 +33,24 @@ def main():
     print("What seed?")
     random.seed(input())
     print("Port #, or just enter for the default of 9876")
-    port = input()
+    port = int(input())
     if(port == ""):
         port = 9876
+    print("How many players?")
+    playerc = int(input())
+    heavy = random.randint(0,1) #which side goes first, 0 for red, 1 for blue
     plain_table = arraygen()
     secret_table = arraycolors(plain_table)
-        
+    factory = bighandler(secret_table)
+    reactor.listenTCP(port, factory)
+    reactor.run()
+    while(len(factory.users) != playerc):
+        sleep(5) #wait for all players to join and give names
+    factory.setusers()
+    factory.sendroles()
+    factory.sendtables()
+    sleep(5) #make sure everyone gets it, the easy way
+    for x in range (0, len(factor.order)): #start taking turns here
+            
 
 main()

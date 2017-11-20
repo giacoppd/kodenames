@@ -5,69 +5,85 @@ from time import sleep
 from random import randint
 
 class handler(LineReceiver):
-    table = [] #static var for the table
-    users = [] #list of all users
-    roles = [] #role list for the players. 0 is red, 1 is blue, 2 is rspy, 3 is bspy
-    border = [] #turn order for the blue and red players
-    rorder = []
-    mx = 0  #max number of players
-    heavy = 0 #which side is heavier, IE which has 9 instead of 8 tiles. 0 is red
-    
+users
+table
+
     @classmethod
-    def statinit(_table, _mx, _roles, _heavy):
+    def setusers(_users, _table):
+        handler.users = _users
         handler.table = _table
-        handler.mx = _mx
-        handler.roles = _roles
-        if(_heavy == 1):
-            handler.heavy = 0
-        for x in range(0, _mx): #create list of red and blue plen for later
-            if(_roles[x] == 0):
-                handler.rorder.append(x)
-            elif(_roles[x] == 1):
-                handler.border.append(x)
-            
-    def __init__(self, _number):
+
+    def __init__(self, _number, _role):
         self.name = None
         self.state = "NAME"
         self.number = _number #user number, AKA which list element they are
-        handler.users.append(self)
-    
+        self.role = _role #role token
+
     def sendtable():
         #sends the table over, word by word, to the client
         #no other information about the table is sent so it's just a list
         for x in handler.table:
             for y in x:
                 self.sendLine(y[0])
-        
+    
+    def sendfulltable():
+        for x in handler.table:
+            for y in x:
+                self.sendLine(y[0]) #spymasters need both the word and the color
+                self.sendLine(y[1])
+    
+    def sendrole(): #send each player their role #
+        self.sendLine(self.role)
+
     def lineReceived(self, data):
         if(self.state == "NAME"):
             self.name = data
-            sendtable() #TODO make this
-            self.state = "CORD"
-        elif(self.state == "CORD"):
-       #     handler.table[data[0]][data[1]][1]
-            
+            self.sendrole()
+            self.state = "WAIT"
+        elif(self.state == "WAIT"):
+            continue
+        elif(self.state == "TURN"):
+            for x in handler.users:
+                x.sendLine(handler.table[data[0]][data[2]][1]) #send all players the update
 
     #this will only ever be when I get coords from a player or their name
         
     def connectionMade(self):
-        self.sendLine("Connection Made!")
-        self.sendLine(handler.roles[self.number])
-class bighandler(Factory):
+        self.sendLine("Connection Made! Enter your name")
+        self.state = "NAME"         
 
-    def __init__(self, table, mx, heavy):
+class bighandler(Factory):
+    
+    def sendtables():
+        for x in range (0,len(self.users)):
+            if(self.roles[x] == 2 or self.roles[x] == 3):
+                self.users[x].sendfulltable()
+            else:
+                self.users[x].sendtable()
+    
+    def sendroles():
+        for x in self.users:
+            x.sendrole()
+
+    def setusers(): #hacky way to set the user list as a static variable
+        handler.setusers(self.users, self.table)
+    
+    def __init__(self, table, mx, heavy): #TODO make less huge
+        self.table = table
+        self.users = []
         self.count = 0 #current number of players, used later
-        roles = [0 for x in range (0, mx)] #list of roles for all players
-        roles[randint(0, mx)] = 2 #mark red spy
+        self.roles = [0 for x in range (0, mx)] #list of roles for all players
+        self.roles[randint(0, mx)] = 2 #mark red spy
+        self.order = [0 for x in range(0,mx-2)] #turn order later on
         n = (mx - 2)/2 #the number of players on the red or blue teams that aren't spys
         counts [n,n] # for assigning blue and red plens
         while(True):
             k = randint(0,mx)
-            if (roles[k] != 2): #make sure the spys are different
-                roles[k] = 3 #assign blue spy
+            if (self.roles[k] != 2): #make sure the spys are different
+                self.roles[k] = 3 #assign blue spy
                 break
-        for x in roles:
-            if(x == 2 || x == 3):
+        for x in self.roles:
+            if(x == 2 or x == 3):
                 continue
             else:
                 i = randint(0,1)
@@ -77,8 +93,22 @@ class bighandler(Factory):
                 else:
                     x = (i ^ 1) #hacky way to get the other one
                     counts[i^1] -= 1
-        handler.statinit(table, mx, roles, heavy)
+        for x in range(0,mx): #getting order lists for later
+            if(roles[x] == 0):
+                rorder.append(x)
+            elif(roles[x] == 1):
+                border.append(x)
+        if(heavy == 0): #which team goes first
+            for(x in range(0,n)):
+                self.order.append(rorder[x])
+                self.order.append(border[x])
+        else:
+            for(x in range(0,n)):
+                self.order.append(border[x])
+                self.order.append(rorder[x])
     
     def buildProtocol(self, addr):
+        p = handler(self.count, self.roles[self.count])
         self.count += 1
-        return handler(self.count)
+        self.users.append(p)
+        return p
